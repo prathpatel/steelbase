@@ -1,4 +1,4 @@
-# TEMPER concept imagery
+# SteelBase concept imagery
 
 Generated with built-in image_gen on 2026-09-19. One generation per asset, no variants or retries. Images are generic concept imagery, not verified production photographs.
 

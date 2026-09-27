@@ -1,126 +1,95 @@
-# vinext-starter
+# SteelBase
 
-A clean full-stack starter running on [vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and Drizzle support.
+Gym equipment, direct from the manufacturer. The site sells in three tiers:
 
-## Prerequisites
+| Tier | Price band | What it is | Route |
+| --- | --- | --- | --- |
+| 01 · Core | ₹25k – ₹50k | Home & starter equipment | `/equipment?tier=core` |
+| 02 · Pro | ₹1L – ₹2L | Commercial-grade machines | `/equipment?tier=pro` |
+| 03 · Build | Custom quote | Complete gym setups (home, corporate, commercial, society, hotel, studio) | `/setups` |
 
-- Node.js `>=22.13.0`
-- Portable: Windows, macOS, or Linux; no Bash required
-- Managed Linux: managed Linux runtime with Bash, `flock`, `curl`, `sha256sum`, and GNU `timeout`
-- Git is required only for publishing
+Where to edit:
 
-## Sites Lifecycle
+- `lib/catalog.ts` — tiers, products (prices, specs), setup types and typical budgets. All prices are indicative placeholders.
+- `lib/site.ts` — brand name, city, contact emails and WhatsApp number. Empty contact fields are hidden everywhere, so fill them in only once they're real. The WhatsApp number is where customers (and forwarded leads) are sent.
+- `content/journal/*.md` — journal articles (front matter + Markdown).
+- `components/drawings.tsx` — blueprint line drawings used as product art.
+- `app/globals.css` — the whole design system (tokens at the top).
 
-The Sites initializer copies the shared starter and selects managed-linux only when `SITES_MANAGED_LINUX_CONTAINER=1`; otherwise it selects portable. It saves the selection only in ignored `.sites-runtime/execution-profile.json`. Both profiles copy/configure first, then use the plugin's separate `install-dependencies.mjs` step to measure installation independently. Edit source under `app/` and follow the Sites skill for installation, preview, builds, and publishing.
+The quote form (`/quote`) saves each request to Postgres with a reference (`SB-00001`, …). When an email or WhatsApp number is configured, the confirmation also offers the enquiry for sending there; without either, the customer is told you'll call them back. Requests are reviewed, forwarded to the manufacturer (with the reference, so referrals can be traced) and tracked at `/admin`.
 
-Whenever reopening or moving a checkout, run `node <plugin-root>/scripts/configure-execution-profile.mjs` before project commands. Profile changes do not alter tracked source or require reinstalling otherwise-valid dependencies; restart an existing preview to use the new selection. Do not commit or upload `.sites-runtime/`.
+The form is protected against spam by a hidden honeypot field, a minimum fill time, and database-backed rate limits (3 per 10 minutes and 10 per day per connection, 3 per day per phone number). Connections are identified by a keyed hash of the IP address; the address itself isn't stored.
 
-This starter does not use `wrangler.jsonc`.
+It's a standard [Next.js](https://nextjs.org) App Router project with Postgres accessed through [Knex](https://knexjs.org).
 
-`install:ci` runs `npm ci` once against the shared lockfile, disables parent-workspace discovery, and includes required dev/optional dependencies despite production/omit settings. Sharp defaults to prebuilt binaries unless explicitly configured otherwise. Do not overlap installers.
+## Develop
 
-- **Portable:** Preserve host HOME, npm cache, registry, proxy, temporary paths, retry/concurrency settings, and lifecycle-script policy. Use `--prefer-offline --no-audit --no-fund`.
-- **Managed Linux:** Use the existing project-local HOME/cache/tmp setup and Linux install lock, tarball preflight, and timeout. Restore the image-seeded npm cache only when its lockfile hash matches; retain network fallback. Builds keep their existing timeout. These helpers are not invoked by the portable profile.
-
-`scripts/sites-env.mjs` preserves the caller's HOME, npm cache, proxy, XDG, and temporary-directory configuration while defaulting Wrangler and Miniflare state to the checkout. If npm reports an unwritable cache, select a writable path with `npm_config_cache` for that install. The `dev` and `start` scripts also keep Wrangler logs inside the checkout. Generated `.sites-runtime/` and `.wrangler/` directories are disposable and ignored by Git.
-
-On portable, `npm run dev` uses `vinext dev` with HMR, starting at port 5173. Vinext records the running server in ignored `.vinext/` state, rejects an ordinary duplicate launch, and recovers stale state after a stopped process; exactly simultaneous starts can race. Pass `--port <port>` or `--hostname <host>` after `npm run dev --` when needed; keep portable previews on loopback.
-
-For browser QA on managed Linux, use `sites-preview start`. The project's dev script runs Vite and accepts the supervisor's `--host 0.0.0.0 --port 4173 --strictPort` arguments. The internal browser uses `http://terminal.local:4173/`; it is not a user-facing URL. The supervisor owns the preview lifecycle. The ignored local profile survives the supervisor's cleared process environment.
-
-The portable profile simulates ChatGPT sign-in only for loopback development requests. Visit `/signin-with-chatgpt?return_to=/` to sign in as `local_seedy` (`seedy@sites.test`, display name `Seedy`) and `/signout-with-chatgpt?return_to=/` to sign out. The development cookie preserves that identity across server restarts. Mock auth is disabled in the managed-linux profile and is not included in production builds; hosted authentication remains dispatch-owned.
-
-The Worker uses `vinext/server/fetch-handler`, including Vinext's config-aware image handling. After building, `npm start` runs that Worker locally through Wrangler on `127.0.0.1`, sharing `.wrangler/state` with dev preview and local D1 migrations; it does not deploy the site or simulate sign-in. Use the URL printed by the server. Pass `npm start -- --port <port>` to select a different built-preview port.
-
-Local previews use Miniflare's placeholder `Request.cf` metadata without a network lookup. Set `CLOUDFLARE_CF_FETCH_ENABLED=true` to opt into fetching preview metadata; this setting does not change hosted request metadata.
-
-Local tool usage metrics are disabled by default. Set `WRANGLER_SEND_METRICS=true` to opt in.
-
-## Included Shape
-
-- edit site code under `app/`
-- `app/chatgpt-auth.ts` provides optional dispatch-owned ChatGPT sign-in helpers
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/index.ts` reads the D1 binding from the Cloudflare Worker environment
-- `db/schema.ts` starts intentionally empty
-- `@cloudflare/workers-types` provides Worker types; `cloudflare-env.d.ts` declares optional `DB`/`BUCKET` bindings—update these declarations if binding names change
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
-
-## Workspace Auth Headers
-
-Signed-in visitors receive both `oai-authenticated-user-id` and `oai-authenticated-user-email`. Private Sites require every visitor to sign in; public Sites may also have anonymous visitors, for whom neither header is present.
-
-The user ID is stable for the same user on the same Site and different across Sites. Use it as the durable user key; use email and name for display or contact purposes.
-
-SIWC-authenticated workspace sites may also receive `oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty `name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by `oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
-
-Treat the full name as optional and fall back to email when it is absent:
-
-```tsx
-import { headers } from "next/headers";
-
-export default async function Home() {
-  const requestHeaders = await headers();
-  const userId = requestHeaders.get("oai-authenticated-user-id");
-  const email = requestHeaders.get("oai-authenticated-user-email");
-  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
-      "percent-encoded-utf-8"
-      ? decodeURIComponent(encodedFullName)
-      : null;
-
-  const displayName = fullName ?? email;
-  // ...
-}
-```
-
-## Optional Dispatch-Owned ChatGPT Sign-In
-
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs optional or required ChatGPT sign-in:
-
-- Use `getChatGPTUser()` for optional signed-in UI.
-- Use the returned `userId` as the stable user key for user-owned records; do not use email as a durable identifier.
-- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send anonymous visitors through Sign in with ChatGPT.
-- In a Server Component, start sign-in with `<a href={chatGPTSignInPath(returnTo)} target="_top">`. The auth helper module is server-only; do not import it into a Client Component.
-- Do not use `fetch`, XHR, a client-side router, or a framework link that can prefetch the sign-in route. SIWC must start as a top-level navigation.
-- Never request the AuthAPI authorization endpoint directly. The dispatch-owned `/signin-with-chatgpt` route must start the SIWC flow.
-- Use `chatGPTSignOutPath(returnTo)` for browser sign-out links or actions.
-- Pass a same-origin relative `returnTo` path for the destination after sign-in or sign-out. The helper validates and safely encodes it.
-- Mark protected pages with `export const dynamic = "force-dynamic"` because they depend on per-request identity headers.
-
-Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the OAuth cookies, and identity header injection. Do not implement app routes for those reserved paths. Routes that do not import and call the helper remain anonymous-compatible.
-
-SIWC establishes identity only; it does not prove workspace membership. Use the Sites hosting platform's access policy controls for workspace-wide restrictions, or enforce explicit server-side membership or allowlist checks.
-
-Use SIWC for account pages, user-specific dashboards, saved records, and write actions tied to the current ChatGPT user. Leave public content anonymous.
-
-## Local D1 migrations
-
-For a D1-backed local preview, generate SQL with `npm run db:generate`. Build once through the Sites skill's build entrypoint (or `npm run build` for standalone use) to generate `dist/server/wrangler.json`, rebuilding if bindings change. From the project root, apply each pending migration in order:
+Requires Node.js `>=22.13.0`.
 
 ```sh
-node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0000_example.sql
+npm install
+cp .env.example .env.local   # set DATABASE_URL, ADMIN_PASSWORD, SITE_URL
+npm run db:migrate
+npm run dev                  # http://localhost:3000
+npm run lint
 ```
 
-Replace the filename with the pending migration and `DB` with your D1 binding name if different. Use `.wrangler/state`, not `.wrangler/state/v3`; Wrangler adds the versioned directories. Do not replay migrations already applied locally. This updates only the preview database; publishing applies production migrations separately.
+## Database
 
-## Diagnostic Commands
+Postgres, with schema changes as JavaScript migrations in `db/migrations/` (config in `knexfile.js`). The `db:*` scripts read `DATABASE_URL` from `.env.local`.
 
-- `npm run install:ci`: perform the one locked dependency install
-- `npm run dev`: start the Vite/Vinext development server
-- `npm run build`: build the deployable Sites artifact
-- `npm run start`: preview the built Worker locally with D1/R2 support
-- `npm run db:generate`: generate Drizzle migrations after schema changes
+| Command | What it does |
+| --- | --- |
+| `npm run db:make -- add_x` | Create `db/migrations/<timestamp>_add_x.js` with empty `up`/`down` |
+| `npm run db:migrate` | Apply all pending migrations |
+| `npm run db:rollback` | Undo the last batch of migrations |
+| `npm run db:status` | List applied and pending migrations |
 
-When using the Sites plugin, follow its skill instructions for installation, builds, and publishing. These npm commands remain available for standalone use.
+Tables:
 
-The portable build runs Vinext directly without a host `timeout` command. The managed-linux build uses `scripts/build-verified.sh` and its existing `SITES_BUILD_TIMEOUT` setting.
+- `quote_requests`: one row per submitted quote, with `status` (`new` → `contacted` → `quoted` → `won`/`lost`) for follow-up.
+- `quote_request_items`: products on a Core/Pro request, with code, name and price copied at submission time.
 
-## Learn More
+Never edit a migration that has already run in production; add a new one instead. App code gets the connection from `getDb()` in `db/index.ts`.
 
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+## Admin
+
+`/admin` lists enquiries with status filters and search (name, phone, city or `SB-` reference). Each enquiry page shows the full request, lets you set its status and internal notes, and has a ready-made message to forward to the manufacturer. It's protected by a single password, `ADMIN_PASSWORD` (at least 12 characters); admin is switched off when it isn't set. Sessions last 7 days, changing the password signs everyone out, and 5 wrong attempts lock a connection out for 15 minutes.
+
+## Environment
+
+| Variable | Needed for |
+| --- | --- |
+| `DATABASE_URL` | Saving quote requests and the admin (runtime) |
+| `ADMIN_PASSWORD` | Signing in to `/admin`; also keys the IP hash (runtime) |
+| `SITE_URL` | Sitemap, `robots.txt` and link previews, e.g. `https://steelbase.in`. Read at **build** time; on Vercel it defaults to the production domain |
+
+## Build and host
+
+Every host needs the environment variables above and a Postgres database (Neon, Supabase, Render, Railway or your own server), with migrations applied before the new code serves traffic. Behind your own reverse proxy, forward the client IP (nginx: `proxy_set_header X-Forwarded-For $remote_addr;`) so rate limiting sees real visitors.
+
+Most pages are prerendered; `/equipment` and `/quote` render per request because they read query parameters, so the site needs a Node server (not a pure static host).
+
+**Any Node host / VPS**
+
+```sh
+npm ci
+npm run db:migrate            # reads .env.local, or export DATABASE_URL
+npm run build
+npm start                     # PORT=3000 by default; set PORT to change it
+```
+
+Put it behind a reverse proxy (nginx, Caddy) for HTTPS, and keep it running with systemd or pm2.
+
+**Docker**
+
+```sh
+docker build --build-arg SITE_URL=https://steelbase.in -t steelbase .
+docker run -p 3000:3000 -e DATABASE_URL=postgres://… -e ADMIN_PASSWORD=… steelbase
+```
+
+On start the container applies pending migrations, then runs `.next/standalone/server.js` as a non-root user on port 3000.
+
+**Vercel / Netlify / Render / Railway**
+
+Import the repo and set `DATABASE_URL` and `ADMIN_PASSWORD` (plus `SITE_URL` once you have a custom domain) in the project's environment variables; the default build (`npm run build`) works as is. Run `npm run db:migrate` against the production database (locally with `DATABASE_URL` pointed at it, or as a release/pre-deploy command) whenever a deploy includes new migrations.
