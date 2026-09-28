@@ -15,8 +15,8 @@ export const metadata: Metadata = {
   },
   twitter: { card: "summary_large_image" },
   title: {
-    default: "SteelBase — Gym equipment, direct from the manufacturer",
-    template: "%s — SteelBase",
+    default: "Fit Baroda Equipments — Gym equipment, direct from the manufacturer",
+    template: "%s — Fit Baroda Equipments",
   },
   description:
     "Gym equipment in three tiers: Core (₹25k–50k), Pro (₹1L–2L) and complete gym setups for homes, offices, societies, hotels, studios and commercial gyms. Based in Vadodara, India.",

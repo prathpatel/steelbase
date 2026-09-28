@@ -4,7 +4,7 @@ import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Privacy policy",
-  description: "What SteelBase collects when you request a quote, why, who it's shared with and your rights.",
+  description: "What Fit Baroda Equipments collects when you request a quote, why, who it's shared with and your rights.",
 };
 
 const updated = "27 September 2026";
