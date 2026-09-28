@@ -8,7 +8,9 @@ export function Logo({ className = "" }: { className?: string }) {
       <svg className="logo-mark" viewBox="0 0 24 24" aria-hidden="true">
         <path d="M3 3h18v4h-7v10h7v4H3v-4h7V7H3z" fill="currentColor" />
       </svg>
-      <span className="logo-word">SteelBase</span>
+      <span className="logo-word">
+        Fit Baroda<span className="logo-sub">Equipments</span>
+      </span>
     </span>
   );
 }

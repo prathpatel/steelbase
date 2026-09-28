@@ -4,15 +4,15 @@ import { site, whatsappLink } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: "Talk to SteelBase about equipment, full gym setups or manufacturing partnerships.",
+  description: "Talk to Fit Baroda Equipments about equipment, full gym setups or manufacturing partnerships.",
 };
 
 export default function ContactPage() {
-  const whatsapp = whatsappLink("Hi SteelBase, I have a question.");
+  const whatsapp = whatsappLink("Hi Fit Baroda Equipments, I have a question.");
   const channels = [
     { label: "Equipment questions", detail: "Core and Pro equipment, orders and delivery.", email: site.email },
     { label: "Gym setup projects", detail: "Home, corporate, commercial, society, hotel and studio setups.", email: site.projectsEmail },
-    { label: "Manufacturing partners", detail: "Manufacturers interested in selling through SteelBase.", email: site.partnersEmail },
+    { label: "Manufacturing partners", detail: "Manufacturers interested in selling through Fit Baroda Equipments.", email: site.partnersEmail },
   ].filter((c) => c.email);
 
   return (
