@@ -50,7 +50,7 @@ export function Header() {
       </a>
       <header className={`site-header ${scrolled || open ? "is-solid" : ""}`}>
         <div className="wrap site-header-inner">
-          <Link href="/" aria-label="Fit Baroda Equipments home" className="site-header-logo">
+          <Link href="/" aria-label="FitBRC home" className="site-header-logo">
             <Logo />
           </Link>
           <nav className="site-nav" aria-label="Main">

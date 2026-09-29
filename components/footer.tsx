@@ -40,9 +40,7 @@ export function Footer() {
           </div>
         </div>
         <div className="footer-word" aria-hidden="true">
-          FIT BARODA
-          <br />
-          EQUIPMENTS
+          FitBRC
         </div>
         <div className="footer-bottom">
           <span>© 2026 {site.name}</span>

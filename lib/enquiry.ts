@@ -24,7 +24,7 @@ export function formatReference(id: number) {
 export function enquiryMessage(e: EnquiryDetails) {
   const tier = getTier(e.tier);
   return [
-    `Fit Baroda Equipments enquiry — ${tier.name} (${tier.range})`,
+    `FitBRC enquiry — ${tier.name} (${tier.range})`,
     e.reference ? `Reference: ${e.reference}` : null,
     "",
     e.tier === "build"
