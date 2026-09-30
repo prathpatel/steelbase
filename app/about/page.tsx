@@ -5,7 +5,7 @@ import { tiers } from "@/lib/catalog";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "FitBRC sells gym equipment direct from manufacturing partners: curated, clearly priced and shipped straight to your floor.",
+    "Fit Baroda Equipments sells gym equipment direct from manufacturing partners: curated, clearly priced and shipped straight to your floor.",
 };
 
 const faqs = [
@@ -44,7 +44,7 @@ export default function AboutPage() {
     <>
       <section className="page-top section-light">
         <div className="wrap about-intro">
-          <p className="eyebrow">About FitBRC</p>
+          <p className="eyebrow">About Fit Baroda Equipments</p>
           <h1 className="display page-title">
             Built on
             <br />
@@ -56,7 +56,7 @@ export default function AboutPage() {
               quality&rdquo; claims and prices you can only get after three phone calls.
             </p>
             <p>
-              FitBRC keeps it simple. We pick a short list of equipment that earns its place, put it in three clear
+              Fit Baroda Equipments keeps it simple. We pick a short list of equipment that earns its place, put it in three clear
               price tiers and ship it straight from the manufacturer to your floor. For full gyms, we plan the space
               with you and put everything in one quote.
             </p>

@@ -25,7 +25,7 @@ export default async function ProductPage({ params }: { params: Params }) {
   const tier = getTier(product.tier);
   const related = products.filter((p) => p.tier === product.tier && p.slug !== product.slug).slice(0, 3);
   const suits = setups.filter((s) => s.starters.includes(product.slug));
-  const whatsapp = whatsappLink(`Hi FitBRC, I'm interested in the ${product.name} (${product.code}).`);
+  const whatsapp = whatsappLink(`Hi Fit Baroda Equipments, I'm interested in the ${product.name} (${product.code}).`);
 
   return (
     <>

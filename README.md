@@ -1,4 +1,4 @@
-# FitBRC
+# Fit Baroda Equipments
 
 Gym equipment, direct from the manufacturer. The site sells in three tiers:
 
@@ -62,7 +62,7 @@ Never edit a migration that has already run in production; add a new one instead
 | --- | --- |
 | `DATABASE_URL` | Saving quote requests and the admin (runtime) |
 | `ADMIN_PASSWORD` | Signing in to `/admin`; also keys the IP hash (runtime) |
-| `SITE_URL` | Sitemap, `robots.txt` and link previews, e.g. `https://fitbrc.in`. Read at **build** time; on Vercel it defaults to the production domain |
+| `SITE_URL` | Sitemap, `robots.txt` and link previews, e.g. `https://fitbarodaequipments.in`. Read at **build** time; on Vercel it defaults to the production domain |
 
 ## Build and host
 
@@ -84,8 +84,8 @@ Put it behind a reverse proxy (nginx, Caddy) for HTTPS, and keep it running with
 **Docker**
 
 ```sh
-docker build --build-arg SITE_URL=https://fitbrc.in -t fitbrc .
-docker run -p 3000:3000 -e DATABASE_URL=postgres://… -e ADMIN_PASSWORD=… fitbrc
+docker build --build-arg SITE_URL=https://fitbarodaequipments.in -t fit-baroda-equipments .
+docker run -p 3000:3000 -e DATABASE_URL=postgres://… -e ADMIN_PASSWORD=… fit-baroda-equipments
 ```
 
 On start the container applies pending migrations, then runs `.next/standalone/server.js` as a non-root user on port 3000.

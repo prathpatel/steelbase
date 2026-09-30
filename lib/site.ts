@@ -1,10 +1,10 @@
 // Brand + contact details used across the site. Contact fields left empty are hidden
 // everywhere (links, buttons, footer), so fill them in only once they're real.
 export const site = {
-  name: "FitBRC",
+  name: "Fit Baroda Equipments",
   tagline: "Gym equipment, direct from the manufacturer.",
   city: "Vadodara, Gujarat, India",
-  // Inboxes, e.g. "hello@fitbrc.in".
+  // Inboxes, e.g. "hello@fitbarodaequipments.in".
   email: "",
   projectsEmail: "",
   partnersEmail: "",
@@ -13,7 +13,7 @@ export const site = {
 };
 
 // Public origin for canonical URLs, sitemap and link previews. Set SITE_URL in
-// production (e.g. https://fitbrc.in); Vercel's own domain is used as a fallback.
+// production (e.g. https://fitbarodaequipments.in); Vercel's own domain is used as a fallback.
 export const siteUrl =
   process.env.SITE_URL ??
   (process.env.VERCEL_PROJECT_PRODUCTION_URL

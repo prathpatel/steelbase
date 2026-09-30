@@ -227,7 +227,7 @@ export default function Home() {
         <Photo name="gym" className="why-photo" alt="A strength gym floor with racks, benches and industrial windows" />
         <div className="wrap why-inner">
           <div className="why-head" data-reveal>
-            <p className="eyebrow">Why FitBRC</p>
+            <p className="eyebrow">Why Fit Baroda Equipments</p>
             <h2 className="h2">
               Built on steel.
               <br />
